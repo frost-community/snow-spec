@@ -1,6 +1,6 @@
 import { SyntaxNode, Unit } from "../syntax/syntax-node";
 
-type SemanticNode = TypeSymbol;
+type SemanticSymbol = TypeSymbol;
 
 export class TypeSymbol {
   kind = "TypeSymbol" as const;
@@ -11,8 +11,8 @@ export class TypeSymbol {
 }
 
 export class SemanticContext {
-  nameToSymbol: Map<string, TypeSymbol> = new Map();
-  nodeToSymbol: Map<SyntaxNode, TypeSymbol> = new Map();
+  nodes: Map<string, SyntaxNode> = new Map();
+  symbols: Map<SyntaxNode, TypeSymbol> = new Map();
 
   constructor() {}
 }
@@ -32,8 +32,8 @@ function collectNames(ctx: SemanticContext, node: SyntaxNode) {
     }
     case "TypeDecl": {
       const symbol = new TypeSymbol(undefined);
-      ctx.nameToSymbol.set(node.name, symbol);
-      ctx.nodeToSymbol.set(node, symbol);
+      ctx.nodes.set(node.name, node);
+      ctx.symbols.set(node, symbol);
       break;
     }
   }
