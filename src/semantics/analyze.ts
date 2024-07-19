@@ -5,16 +5,21 @@ type SemanticSymbol = TypeSymbol;
 export class TypeSymbol {
   kind = "TypeSymbol" as const;
   constructor(
-    /** Primitive type or Type symbol */
-    public baseType: string | TypeSymbol | undefined,
+    public baseType: TypeSymbol | 'not-resolved' | 'none',
   ) {}
 }
 
 export class SemanticContext {
   nodes: Map<string, SyntaxNode> = new Map();
   symbols: Map<SyntaxNode, TypeSymbol> = new Map();
+  builtinTypes: Map<string, TypeSymbol> = new Map();
 
-  constructor() {}
+  constructor() {
+    this.builtinTypes.set('string', new TypeSymbol('none'));
+    this.builtinTypes.set('number', new TypeSymbol('none'));
+    this.builtinTypes.set('boolean', new TypeSymbol('none'));
+    this.builtinTypes.set('object', new TypeSymbol('none'));
+  }
 }
 
 export function analyze(ctx: SemanticContext, unit: Unit) {
@@ -31,7 +36,7 @@ function collectNames(ctx: SemanticContext, node: SyntaxNode) {
       break;
     }
     case "TypeDecl": {
-      const symbol = new TypeSymbol(undefined);
+      const symbol = new TypeSymbol('not-resolved');
       ctx.nodes.set(node.name, node);
       ctx.symbols.set(node, symbol);
       break;
